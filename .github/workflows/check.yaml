@@ -42,21 +42,25 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
 
-      - name: Get latest CoreDNS release
-        id: info
-        run: |
-          TAG=$(curl --silent "https://api.github.com/repos/coredns/coredns/releases/latest" | jq -r .tag_name | sed 's/^v//')
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
-
       - name: Build binaries
         env:
           COREDNS_VERSION: ${{ needs.check.outputs.tag }}
         run: ./build.sh
+
+      - name: Create tag
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/${{ needs.info.outputs.tag }}',
+              sha: context.sha
+            })
 
       - name: Create release
         uses: softprops/action-gh-release@7b4da11513bf3f43f9999e90eabced41ab8bb048  # v2.2.0
         with:
           name: ${{ needs.check.outputs.tag }}
           tag_name: ${{ needs.info.outputs.tag }}
-          create_tag: true
           files: dist/*
