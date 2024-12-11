@@ -57,4 +57,5 @@ jobs:
         uses: softprops/action-gh-release@7b4da11513bf3f43f9999e90eabced41ab8bb048  # v2.2.0
         with:
           name: ${{ needs.check.outputs.tag }}
+          tag_name: ${{ needs.info.outputs.tag }}
           files: dist/*
