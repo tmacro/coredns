@@ -10,6 +10,9 @@ jobs:
   check:
     name: Check
     runs-on: ubuntu-latest
+    outputs:
+      new_release: ${{ steps.check.outputs.new_release }}
+      tag: ${{ steps.check.outputs.tag }}
     steps:
       - name: Check out code
         uses: actions/checkout@v2
@@ -21,12 +24,12 @@ jobs:
           if [ "$COREDNS_VERSION" == "$REPO_VERSION" ]; then
               echo "Repository release matches latest CoreDNS release"
               echo "new_release=false" >> $GITHUB_OUTPUT
-              echo "tag=$TAG" >> $GITHUB_OUTPUT
           else
               echo "Repository release does not match latest CoreDNS release"
               echo "CoreDNS: $COREDNS_VERSION"
               echo "Repository: $REPO_VERSION"
               echo "new_release=true" >> $GITHUB_OUTPUT
+              echo "tag=$COREDNS_VERSION" >> $GITHUB_OUTPUT
           fi
 
   build:
