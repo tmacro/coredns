@@ -10,14 +10,12 @@ fi
 # Download release tarball
 curl -L -o coredns.tar "https://api.github.com/repos/coredns/coredns/tarball/$COREDNS_VERSION"
 
-
 # Extract the tarball
 tar -xf coredns.tar
 
-pushd coredns-coredns-*
+cp plugin.cfg ./coredns-coredns-*/plugin.cfg
 
-cat plugin.cfg ../plugin.cfg > plugin.cfg.tmp
-mv plugin.cfg.tmp plugin.cfg
+pushd coredns-coredns-*
 
 make gen
 
