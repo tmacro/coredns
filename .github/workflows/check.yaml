@@ -18,6 +18,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Check for new releases
+        id: check
         run: |
           COREDNS_VERSION=$(curl --silent "https://api.github.com/repos/coredns/coredns/releases/latest" | jq -r .tag_name)
           REPO_VERSION=$(curl --silent "https://api.github.com/repos/${{ github.repository }}/releases/latest" | jq -r .name)
