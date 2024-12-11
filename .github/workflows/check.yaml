@@ -57,7 +57,7 @@ jobs:
             github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              ref: 'refs/tags/${{ needs.info.outputs.tag }}',
+              ref: 'refs/tags/${{ needs.check.outputs.tag }}',
               sha: context.sha
             })
 
@@ -65,5 +65,5 @@ jobs:
         uses: softprops/action-gh-release@7b4da11513bf3f43f9999e90eabced41ab8bb048  # v2.2.0
         with:
           name: ${{ needs.check.outputs.tag }}
-          tag_name: ${{ needs.info.outputs.tag }}
+          tag_name: ${{ needs.check.outputs.tag }}
           files: dist/*
