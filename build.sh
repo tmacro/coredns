@@ -4,11 +4,11 @@ set -ex -o pipefail
 
 if [ -z "$COREDNS_VERSION" ]; then
     # Get the latest release of coredns
-    COREDNS_VERSION=$(curl --silent "https://api.github.com/repos/coredns/coredns/releases/latest" | jq -r .tag_name | sed 's/^v//')
+    COREDNS_VERSION=$(curl --silent "https://api.github.com/repos/coredns/coredns/releases/latest" | jq -r .tag_name)
 fi
 
 # Download release tarball
-curl -L -o coredns.tar "https://api.github.com/repos/coredns/coredns/tarball/v$COREDNS_VERSION"
+curl -L -o coredns.tar "https://api.github.com/repos/coredns/coredns/tarball/$COREDNS_VERSION"
 
 
 # Extract the tarball
