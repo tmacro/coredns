@@ -25,10 +25,17 @@ jobs:
               owner: 'coredns',
               repo: 'coredns'
             })
-            const { data: { tag_name: latest_build_tag } } = await github.rest.repos.getLatestRelease({
-              owner: context.repo.owner,
-              repo: context.repo.repo
-            })
+            try {
+              const { data: { tag_name: latest_build_tag } } = await github.rest.repos.getLatestRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo
+              })
+            } catch (error) {
+              console.log('No releases found')
+              core.setOutput('new_release', 'true')
+              core.setOutput('tag', coredns_tag)
+              return
+            }
             if (coredns_tag === latest_build_tag) {
               console.log('Repository release matches latest CoreDNS release')
               core.setOutput('new_release', 'false')
