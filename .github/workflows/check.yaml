@@ -31,21 +31,21 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo
               })
+              if (coredns_tag === latest_build_tag) {
+                console.log('Repository release matches latest CoreDNS release')
+                core.setOutput('new_release', 'false')
+              } else {
+                console.log('Repository release does not match latest CoreDNS release')
+                console.log(`CoreDNS: ${tag_name}`)
+                console.log(`Repository: ${name}`)
+                core.setOutput('new_release', 'true')
+                core.setOutput('tag', coredns_tag)
+              }
             } catch (error) {
               console.log('No releases found')
               core.setOutput('new_release', 'true')
               core.setOutput('tag', coredns_tag)
               return
-            }
-            if (coredns_tag === latest_build_tag) {
-              console.log('Repository release matches latest CoreDNS release')
-              core.setOutput('new_release', 'false')
-            } else {
-              console.log('Repository release does not match latest CoreDNS release')
-              console.log(`CoreDNS: ${tag_name}`)
-              console.log(`Repository: ${name}`)
-              core.setOutput('new_release', 'true')
-              core.setOutput('tag', coredns_tag)
             }
 
   build:
