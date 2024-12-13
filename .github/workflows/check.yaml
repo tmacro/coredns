@@ -17,24 +17,28 @@ jobs:
       new_release: ${{ steps.check.outputs.new_release }}
       tag: ${{ steps.check.outputs.tag }}
     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-
-      - name: Check for new releases
-        id: check
-        run: |
-          COREDNS_VERSION=$(curl --silent "https://api.github.com/repos/coredns/coredns/releases/latest" | jq -r .tag_name)
-          REPO_VERSION=$(curl --silent "https://api.github.com/repos/${{ github.repository }}/releases/latest" | jq -r .name)
-          if [ "$COREDNS_VERSION" == "$REPO_VERSION" ]; then
-              echo "Repository release matches latest CoreDNS release"
-              echo "new_release=false" >> $GITHUB_OUTPUT
-          else
-              echo "Repository release does not match latest CoreDNS release"
-              echo "CoreDNS: $COREDNS_VERSION"
-              echo "Repository: $REPO_VERSION"
-              echo "new_release=true" >> $GITHUB_OUTPUT
-              echo "tag=$COREDNS_VERSION" >> $GITHUB_OUTPUT
-          fi
+      - name: Check for new CoreDNS Release
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const { data: { tag_name: coredns_tag } } = await github.rest.repos.getLatestRelease({
+              owner: 'coredns',
+              repo: 'coredns'
+            })
+            const { data: { tag_name: latest_build_tag } } = await github.rest.repos.getLatestRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            })
+            if (coredns_tag === latest_build_tag) {
+              console.log('Repository release matches latest CoreDNS release')
+              core.setOutput('new_release', 'false')
+            } else {
+              console.log('Repository release does not match latest CoreDNS release')
+              console.log(`CoreDNS: ${tag_name}`)
+              console.log(`Repository: ${name}`)
+              core.setOutput('new_release', 'true')
+              core.setOutput('tag', coredns_tag)
+            }
 
   build:
     name: Build
